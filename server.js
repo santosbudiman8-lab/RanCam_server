@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
+let onlineUsers = 0;
 // Mengizinkan koneksi dari aplikasi Flutter
 const io = new Server(server, {
   cors: { origin: "*" } 
@@ -14,8 +15,13 @@ const io = new Server(server, {
 let waitingUser = null; 
 
 io.on('connection', (socket) => {
+  onlineUsers++;
+  io.emit('online_count', onlineUsers);
   console.log('User terhubung dengan ID:', socket.id);
 
+  socket.on('get_online_count', () => {
+    socket.emit('online_count', onlineUsers);
+  });
   // 1. Saat pengguna menekan "Start/Mulai" di aplikasi Flutter
   socket.on('find_partner', () => {
     
@@ -65,6 +71,8 @@ io.on('connection', (socket) => {
 
   // 3. Saat pengguna menekan tombol "Next" atau menutup aplikasi
   socket.on('disconnect', () => {
+    onlineUsers--;
+    io.emit('online_count', onlineUsers);
     console.log('User terputus:', socket.id);
     
     // Jika yang keluar adalah orang yang sedang antre, hapus dia dari antrean
