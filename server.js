@@ -5,6 +5,11 @@ const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 
+app.get('/', (req, res) => {
+  // Ganti URL di bawah dengan link halaman itch.io RanCam Anda
+  res.redirect('https://rancam.itch.io/randcam'); 
+});
+
 let onlineUsers = 0;
 // Mengizinkan koneksi dari aplikasi Flutter
 const io = new Server(server, {
